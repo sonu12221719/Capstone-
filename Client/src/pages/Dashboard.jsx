@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
+import {
+  Bot, ClipboardList, Bell, Stethoscope, Pill,
+  MessageCircle, FileText, Upload, Heart,
+} from "lucide-react";
 
 function StatCard({ label, value, sub, color, icon }) {
   return (
     <div className="card flex items-start gap-4">
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 ${color}`}>
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
         {icon}
       </div>
       <div>
@@ -25,6 +29,8 @@ function RiskMeter({ score, level }) {
     score < 30 ? "text-green-700 dark:text-green-400" : score < 60 ? "text-yellow-700 dark:text-yellow-400" : "text-red-700 dark:text-red-400";
   const bgColor =
     score < 30 ? "bg-green-50 dark:bg-green-900/20" : score < 60 ? "bg-yellow-50 dark:bg-yellow-900/20" : "bg-red-50 dark:bg-red-900/20";
+  const heartColor =
+    score < 30 ? "text-green-500" : score < 60 ? "text-yellow-500" : "text-red-500";
 
   return (
     <div className={`card border-none ${bgColor}`}>
@@ -33,7 +39,7 @@ function RiskMeter({ score, level }) {
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Health Risk Score</p>
           <p className={`text-3xl font-bold ${textColor}`}>{score}<span className="text-base font-normal text-gray-400 dark:text-gray-500">/100</span></p>
         </div>
-        <span className="text-4xl">{score < 30 ? "💚" : score < 60 ? "💛" : "❤️"}</span>
+        <Heart className={`w-9 h-9 fill-current ${heartColor}`} />
       </div>
       <div className="w-full bg-white/60 dark:bg-gray-700/60 rounded-full h-2.5 mb-2">
         <div
@@ -44,6 +50,18 @@ function RiskMeter({ score, level }) {
       <p className={`text-xs font-medium ${textColor}`}>{level}</p>
     </div>
   );
+}
+
+function SourceIcon({ source }) {
+  if (source === "chat") return <MessageCircle className="w-5 h-5 text-blue-500" />;
+  if (source === "prescription") return <Pill className="w-5 h-5 text-purple-500" />;
+  return <FileText className="w-5 h-5 text-green-500" />;
+}
+
+function ReminderTypeIcon({ type }) {
+  if (type === "medication") return <Pill className="w-5 h-5 text-purple-500" />;
+  if (type === "checkup") return <Stethoscope className="w-5 h-5 text-blue-500" />;
+  return <Bell className="w-5 h-5 text-gray-500" />;
 }
 
 export default function Dashboard() {
@@ -89,12 +107,12 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Hello, {user?.name?.split(" ")[0]} 👋
+            Hello, {user?.name?.split(" ")[0]}
           </h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Here's your health overview for today.</p>
         </div>
         <Link to="/chat" className="btn-primary flex items-center gap-2">
-          <span>🤖</span> Chat with AI
+          <Bot className="w-4 h-4" /> Chat with AI
         </Link>
       </div>
 
@@ -104,28 +122,28 @@ export default function Dashboard() {
           label="Health Records"
           value={records.length}
           sub="Recent entries"
-          icon="📋"
+          icon={<ClipboardList className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
           color="bg-blue-100 dark:bg-blue-900/30"
         />
         <StatCard
           label="Upcoming Reminders"
           value={upcomingReminders.length}
           sub="Scheduled"
-          icon="🔔"
+          icon={<Bell className="w-5 h-5 text-purple-600 dark:text-purple-400" />}
           color="bg-purple-100 dark:bg-purple-900/30"
         />
         <StatCard
           label="Symptoms Tracked"
           value={memory?.frequentSymptoms?.length ?? 0}
           sub="In AI memory"
-          icon="🩺"
+          icon={<Stethoscope className="w-5 h-5 text-green-600 dark:text-green-400" />}
           color="bg-green-100 dark:bg-green-900/30"
         />
         <StatCard
           label="Known Conditions"
           value={user?.chronicConditions?.length ?? 0}
           sub="In profile"
-          icon="💊"
+          icon={<Pill className="w-5 h-5 text-orange-600 dark:text-orange-400" />}
           color="bg-orange-100 dark:bg-orange-900/30"
         />
       </div>
@@ -174,8 +192,8 @@ export default function Dashboard() {
             <div className="space-y-3">
               {records.map((r) => (
                 <div key={r._id} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <span className="text-lg shrink-0">
-                    {r.source === "chat" ? "💬" : r.source === "prescription" ? "💊" : "📄"}
+                  <span className="shrink-0 mt-0.5">
+                    <SourceIcon source={r.source} />
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
@@ -202,8 +220,8 @@ export default function Dashboard() {
             <div className="space-y-3">
               {upcomingReminders.map((r) => (
                 <div key={r._id} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                  <span className="text-lg shrink-0">
-                    {r.type === "medication" ? "💊" : r.type === "checkup" ? "🩺" : "🔔"}
+                  <span className="shrink-0 mt-0.5">
+                    <ReminderTypeIcon type={r.type} />
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{r.title}</p>
@@ -222,17 +240,19 @@ export default function Dashboard() {
       {/* Quick links */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { to: "/chat", icon: "🤖", label: "AI Chat" },
-          { to: "/doctors", icon: "👨‍⚕️", label: "Find Doctors" },
-          { to: "/reports", icon: "📄", label: "Upload Report" },
-          { to: "/reminders", icon: "🔔", label: "Set Reminder" },
-        ].map(({ to, icon, label }) => (
+          { to: "/chat",      Icon: Bot,         label: "AI Chat" },
+          { to: "/doctors",   Icon: Stethoscope,  label: "Find Doctors" },
+          { to: "/reports",   Icon: Upload,       label: "Upload Report" },
+          { to: "/reminders", Icon: Bell,         label: "Set Reminder" },
+        ].map(({ to, Icon, label }) => (
           <Link
             key={to}
             to={to}
             className="card hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-200 text-center cursor-pointer"
           >
-            <div className="text-3xl mb-2">{icon}</div>
+            <div className="flex justify-center mb-2">
+              <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            </div>
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</p>
           </Link>
         ))}

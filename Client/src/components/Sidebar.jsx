@@ -1,34 +1,21 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import {
+  LayoutDashboard, Bot, ClipboardList, Stethoscope,
+  Pill, Bell, FileText, User, LogOut, Sun, Moon, Activity,
+} from "lucide-react";
 
 const nav = [
-  { to: "/dashboard", label: "Dashboard",     icon: "🏠" },
-  { to: "/chat",      label: "AI Chat",        icon: "🤖" },
-  { to: "/health",    label: "Health Records", icon: "📋" },
-  { to: "/doctors",   label: "Doctors",        icon: "👨‍⚕️" },
-  { to: "/pharmacy",  label: "Pharmacy",       icon: "💊" },
-  { to: "/reminders", label: "Reminders",      icon: "🔔" },
-  { to: "/reports",   label: "Reports",        icon: "📄" },
-  { to: "/profile",   label: "Profile",        icon: "👤" },
+  { to: "/dashboard", label: "Dashboard",     Icon: LayoutDashboard },
+  { to: "/chat",      label: "AI Chat",        Icon: Bot },
+  { to: "/health",    label: "Health Records", Icon: ClipboardList },
+  { to: "/doctors",   label: "Doctors",        Icon: Stethoscope },
+  { to: "/pharmacy",  label: "Pharmacy",       Icon: Pill },
+  { to: "/reminders", label: "Reminders",      Icon: Bell },
+  { to: "/reports",   label: "Reports",        Icon: FileText },
+  { to: "/profile",   label: "Profile",        Icon: User },
 ];
-
-function SunIcon() {
-  return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="5" />
-      <path strokeLinecap="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-    </svg>
-  );
-}
 
 export default function Sidebar({ open, onClose }) {
   const { user, logout } = useAuth();
@@ -36,90 +23,173 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
-        <div className="fixed inset-0 bg-black/40 z-20 lg:hidden" onClick={onClose} />
+        <div
+          className="fixed inset-0 z-20 lg:hidden"
+          style={{ background: "rgba(2,12,15,.75)", backdropFilter: "blur(4px)" }}
+          onClick={onClose}
+        />
       )}
 
-      <aside className={`
-        fixed top-0 left-0 h-full w-64
-        bg-white dark:bg-gray-900
-        border-r border-gray-200 dark:border-gray-700
-        z-30 flex flex-col transition-transform duration-300
-        ${open ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0 lg:static lg:z-auto
-      `}>
-        {/* Logo */}
-        <div className="flex items-center gap-2 px-5 py-5 border-b border-gray-100 dark:border-gray-700">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0">
-            H
+      <aside
+        className={`
+          fixed top-0 left-0 h-full w-64 z-30 flex flex-col
+          transition-transform duration-300
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0 lg:static lg:z-auto
+        `}
+        style={{
+          background: dark ? "#060f13" : "#ffffff",
+          borderRight: dark ? "1px solid #0f2a35" : "1px solid #b8e4de",
+        }}
+      >
+        {/* ── Logo ──────────────────────────────────────────────────────── */}
+        <div
+          className="flex items-center gap-3 px-5 py-[18px]"
+          style={{ borderBottom: dark ? "1px solid #0f2a35" : "1px solid #b8e4de" }}
+        >
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: "linear-gradient(135deg,#0a6e8a,#0a5f7a)",
+              boxShadow: "0 4px 14px rgba(10,110,138,.45)",
+            }}
+          >
+            <Activity className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-gray-900 dark:text-white text-lg">HealthAI</span>
+          <span
+            className="font-bold text-lg tracking-tight"
+            style={{ color: dark ? "#e0f5f8" : "#0a3340" }}
+          >
+            HealthAI
+          </span>
         </div>
 
-        {/* User chip */}
-        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg px-3 py-2">
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+        {/* ── User chip ─────────────────────────────────────────────────── */}
+        <div
+          className="px-4 py-3"
+          style={{ borderBottom: dark ? "1px solid #0f2a35" : "1px solid #b8e4de" }}
+        >
+          <div
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+            style={{
+              background: dark ? "#0a2530" : "#f0f9f7",
+              border: dark ? "1px solid #164555" : "1px solid #b8e4de",
+            }}
+          >
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+              style={{ background: "linear-gradient(135deg,#0d8aaa,#0a5f7a)" }}
+            >
               {user?.name?.[0]?.toUpperCase() || "U"}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.name}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+              <p
+                className="text-sm font-semibold truncate"
+                style={{ color: dark ? "#e0f5f8" : "#0a3340" }}
+              >
+                {user?.name}
+              </p>
+              <p
+                className="text-xs truncate"
+                style={{ color: dark ? "#4a8a95" : "#5a9aa5" }}
+              >
+                {user?.email}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Nav links */}
+        {/* ── Nav links ─────────────────────────────────────────────────── */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {nav.map(({ to, label, icon }) => (
+          {nav.map(({ to, label, Icon }) => (
             <NavLink
               key={to}
               to={to}
               onClick={onClose}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-                }`
+              className={({ isActive }) => isActive ? "nav-active" : "nav-idle"}
+              style={({ isActive }) =>
+                isActive
+                  ? {
+                      display: "flex", alignItems: "center", gap: "12px",
+                      padding: "10px 12px", borderRadius: "12px",
+                      fontSize: "14px", fontWeight: 600, color: "#ffffff",
+                      background: "linear-gradient(135deg,#0a6e8a,#0a5f7a)",
+                      boxShadow: "0 4px 16px rgba(10,110,138,.4)",
+                      textDecoration: "none",
+                    }
+                  : {
+                      display: "flex", alignItems: "center", gap: "12px",
+                      padding: "10px 12px", borderRadius: "12px",
+                      fontSize: "14px", fontWeight: 500, textDecoration: "none",
+                      color: dark ? "#7ab5c0" : "#3a7a85",
+                      transition: "all .15s ease",
+                    }
               }
+              onMouseEnter={(e) => {
+                if (!e.currentTarget.className.includes("nav-active")) {
+                  e.currentTarget.style.background = dark ? "#0a2530" : "#f0f9f7";
+                  e.currentTarget.style.color = dark ? "#4abdc6" : "#0a6e8a";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!e.currentTarget.className.includes("nav-active")) {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = dark ? "#7ab5c0" : "#3a7a85";
+                }
+              }}
             >
-              <span className="text-base">{icon}</span>
+              <Icon className="w-4 h-4 shrink-0" />
               {label}
             </NavLink>
           ))}
         </nav>
 
-        {/* Bottom: theme toggle + logout */}
-        <div className="px-3 py-4 border-t border-gray-100 dark:border-gray-700 space-y-1">
-          {/* Dark / Light toggle */}
+        {/* ── Bottom bar ────────────────────────────────────────────────── */}
+        <div
+          className="px-3 py-4 space-y-1"
+          style={{ borderTop: dark ? "1px solid #0f2a35" : "1px solid #b8e4de" }}
+        >
+          {/* Theme toggle */}
           <button
             onClick={toggle}
-            className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium
-                       text-gray-600 dark:text-gray-300
-                       hover:bg-gray-100 dark:hover:bg-gray-800
-                       transition-colors duration-150"
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+            style={{ color: dark ? "#7ab5c0" : "#3a7a85" }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = dark ? "#0a2530" : "#f0f9f7";
+              e.currentTarget.style.color = dark ? "#4abdc6" : "#0a6e8a";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = dark ? "#7ab5c0" : "#3a7a85";
+            }}
           >
             <span className="flex items-center gap-3">
-              {dark ? <MoonIcon /> : <SunIcon />}
+              {dark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
               {dark ? "Dark Mode" : "Light Mode"}
             </span>
-            {/* Toggle pill */}
-            <span className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 ${dark ? "bg-blue-600" : "bg-gray-300"}`}>
-              <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 ${dark ? "translate-x-4" : "translate-x-1"}`} />
+            <span
+              className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200"
+              style={{ background: dark ? "#0a6e8a" : "#d1d5db" }}
+            >
+              <span
+                className="inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform duration-200"
+                style={{ transform: dark ? "translateX(18px)" : "translateX(4px)" }}
+              />
             </span>
           </button>
 
           {/* Logout */}
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                       text-red-600 dark:text-red-400
-                       hover:bg-red-50 dark:hover:bg-red-900/20
-                       transition-colors duration-150"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+            style={{ color: "#e11d48" }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = dark ? "rgba(225,29,72,.1)" : "#fff1f2";
+            }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
           >
-            <span>🚪</span> Logout
+            <LogOut className="w-4 h-4 shrink-0" /> Logout
           </button>
         </div>
       </aside>

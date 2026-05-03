@@ -20,10 +20,11 @@ const cleanText = (text) => {
   if (!text) return "";
 
   return text
-    .replace(/```[\s\S]*?```/g, (block) =>
-      block.replace(/```/g, "").trim()
-    )
-    .replace(/[*_`>#]/g, "")
+    // Remove opening fence including optional language label (e.g. ```json)
+    .replace(/^```[a-z]*\s*/im, "")
+    // Remove closing fence
+    .replace(/```\s*$/m, "")
+    .replace(/[*_>#]/g, "")
     .replace(/\r\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();

@@ -99,13 +99,15 @@ ${rawText.slice(0, 6000)}
 
   try {
     const response = await askGemini(prompt);
-    // Strip any markdown fences if Gemini wrapped the response
-    const cleaned = response
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/```\s*$/i, "")
-      .trim();
-    return JSON.parse(cleaned);
+    // Extract JSON by finding the outermost { ... } boundaries.
+    // This handles cases where cleanText leaves a "json\n" prefix or
+    // other surrounding text after stripping markdown fences.
+    const start = response.indexOf("{");
+    const end = response.lastIndexOf("}");
+    if (start === -1 || end === -1 || end <= start) {
+      throw new Error("No JSON object found in Gemini response");
+    }
+    return JSON.parse(response.slice(start, end + 1));
   } catch (parseErr) {
     console.error("[Gemini] JSON parse failed:", parseErr.message);
     return {

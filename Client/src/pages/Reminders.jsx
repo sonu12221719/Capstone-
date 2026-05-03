@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import api from "../api/client";
+import { Stethoscope, Pill, Syringe, FlaskConical, Bell, AlertTriangle, Check, X } from "lucide-react";
 
-const typeIcon = { checkup: "🩺", medication: "💊", vaccination: "💉", test: "🧪", general: "🔔" };
+const typeIconMap = {
+  checkup:     Stethoscope,
+  medication:  Pill,
+  vaccination: Syringe,
+  test:        FlaskConical,
+  general:     Bell,
+};
+
 const typeColor = {
   checkup: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800",
   medication: "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800",
@@ -9,6 +17,11 @@ const typeColor = {
   test: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800",
   general: "bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600",
 };
+
+function TypeIcon({ type, className = "w-5 h-5" }) {
+  const Icon = typeIconMap[type] || Bell;
+  return <Icon className={className} />;
+}
 
 function ReminderCard({ reminder, onComplete, onDelete }) {
   const isOverdue = !reminder.isCompleted && new Date(reminder.scheduledDate) < new Date();
@@ -18,7 +31,9 @@ function ReminderCard({ reminder, onComplete, onDelete }) {
       reminder.isCompleted ? "opacity-60" : ""
     }`}>
       <div className="flex items-start gap-3">
-        <span className="text-xl shrink-0 mt-0.5">{typeIcon[reminder.type] || "🔔"}</span>
+        <span className="shrink-0 mt-0.5">
+          <TypeIcon type={reminder.type} />
+        </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -33,22 +48,23 @@ function ReminderCard({ reminder, onComplete, onDelete }) {
               {!reminder.isCompleted && (
                 <button
                   onClick={() => onComplete(reminder._id)}
-                  className="text-xs bg-white dark:bg-gray-700 border border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 px-2 py-1 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20"
+                  className="text-xs bg-white dark:bg-gray-700 border border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 px-2 py-1 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-1"
                 >
-                  ✓ Done
+                  <Check className="w-3 h-3" /> Done
                 </button>
               )}
               <button
                 onClick={() => onDelete(reminder._id)}
                 className="text-xs bg-white dark:bg-gray-700 border border-red-200 dark:border-red-800 text-red-500 dark:text-red-400 px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
               >
-                ✕
+                <X className="w-3 h-3" />
               </button>
             </div>
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <span className={`text-xs ${isOverdue ? "text-red-600 dark:text-red-400 font-medium" : "text-gray-400 dark:text-gray-500"}`}>
-              {isOverdue ? "⚠️ Overdue · " : ""}
+            <span className={`text-xs flex items-center gap-1 ${isOverdue ? "text-red-600 dark:text-red-400 font-medium" : "text-gray-400 dark:text-gray-500"}`}>
+              {isOverdue && <AlertTriangle className="w-3 h-3" />}
+              {isOverdue ? "Overdue · " : ""}
               {new Date(reminder.scheduledDate).toLocaleDateString("en-IN", {
                 day: "numeric", month: "short", year: "numeric"
               })}
@@ -174,8 +190,8 @@ export default function Reminders() {
                   value={form.type}
                   onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
                 >
-                  {Object.keys(typeIcon).map((t) => (
-                    <option key={t} value={t}>{typeIcon[t]} {t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                  {Object.keys(typeIconMap).map((t) => (
+                    <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
                   ))}
                 </select>
               </div>

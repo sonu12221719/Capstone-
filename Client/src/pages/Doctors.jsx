@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import api from "../api/client";
+import { Stethoscope, Bot, Star } from "lucide-react";
 
 function DoctorCard({ doctor }) {
   return (
     <div className="card hover:shadow-md transition-shadow duration-200">
       <div className="flex items-start gap-4 mb-3">
-        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-2xl shrink-0">
-          👨‍⚕️
+        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center shrink-0">
+          <Stethoscope className="w-6 h-6 text-blue-600 dark:text-blue-400" />
         </div>
         <div className="min-w-0">
           <h3 className="font-semibold text-gray-900 dark:text-white">{doctor.name}</h3>
@@ -44,7 +45,10 @@ function DoctorCard({ doctor }) {
         {doctor.rating?.average > 0 && (
           <div>
             <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Rating</p>
-            <p className="text-gray-700 dark:text-gray-300">⭐ {doctor.rating.average.toFixed(1)} ({doctor.rating.count})</p>
+            <p className="text-gray-700 dark:text-gray-300 flex items-center gap-1">
+              <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+              {doctor.rating.average.toFixed(1)} ({doctor.rating.count})
+            </p>
           </div>
         )}
       </div>
@@ -119,7 +123,9 @@ export default function Doctors() {
     <div className="space-y-5">
       {/* AI Recommendation */}
       <div className="card bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-100 dark:border-blue-800">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">🤖 Get AI Doctor Recommendation</h3>
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+          <Bot className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Get AI Doctor Recommendation
+        </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Describe your symptoms and we'll recommend the right specialist.</p>
         <div className="flex gap-2">
           <input

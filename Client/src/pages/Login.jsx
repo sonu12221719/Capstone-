@@ -1,111 +1,14 @@
-import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import api from "../api/client";
+import { HeartPulse, Mail, Lock, ArrowRight } from "lucide-react";
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-
-// ── Google SVG icon ───────────────────────────────────────────────────────────
-function GoogleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#4285F4" d="M47.532 24.552c0-1.636-.138-3.2-.395-4.704H24v9.01h13.228c-.578 3.046-2.3 5.628-4.9 7.36v6.1h7.928c4.644-4.278 7.276-10.576 7.276-17.766z"/>
-      <path fill="#34A853" d="M24 48c6.636 0 12.202-2.198 16.268-5.96l-7.928-6.1c-2.198 1.474-5.01 2.34-8.34 2.34-6.42 0-11.856-4.336-13.8-10.162H2.04v6.292C6.088 42.614 14.436 48 24 48z"/>
-      <path fill="#FBBC05" d="M10.2 28.118A14.9 14.9 0 0 1 9.36 24c0-1.428.246-2.814.84-4.118v-6.292H2.04A23.99 23.99 0 0 0 0 24c0 3.874.928 7.544 2.04 10.41l8.16-6.292z"/>
-      <path fill="#EA4335" d="M24 9.54c3.618 0 6.864 1.244 9.424 3.68l7.07-7.07C36.196 2.198 30.63 0 24 0 14.436 0 6.088 5.386 2.04 13.59l8.16 6.292C12.144 13.876 17.58 9.54 24 9.54z"/>
-    </svg>
-  );
-}
-
-// ── Load Google Identity Services once ───────────────────────────────────────
-function loadGIS() {
-  return new Promise((resolve) => {
-    if (window.google?.accounts?.id) { resolve(); return; }
-    const s = document.createElement("script");
-    s.src = "https://accounts.google.com/gsi/client";
-    s.async = true;
-    s.onload = resolve;
-    document.head.appendChild(s);
-  });
-}
-
-// ── Custom Google Sign-In button ──────────────────────────────────────────────
-function GoogleSignIn({ onSuccess, onError }) {
-  const [gisReady, setGisReady] = useState(false);
-  const [signingIn, setSigningIn] = useState(false);
-  const { login: authLogin } = useAuth();
-
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === "your_google_client_id_here") return;
-
-    loadGIS().then(() => {
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: async ({ credential }) => {
-          try {
-            const { data } = await api.post("/auth/google", { idToken: credential });
-            localStorage.setItem("token", data.token);
-            onSuccess(data.user);
-          } catch (err) {
-            onError(err.response?.data?.message || "Google sign-in failed.");
-          } finally {
-            setSigningIn(false);
-          }
-        },
-      });
-      setGisReady(true);
-    });
-  }, []);
-
-  const handleClick = () => {
-    if (!gisReady) return;
-    setSigningIn(true);
-    window.google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        // Fallback to redirect flow
-        window.location.href = "/api/auth/google";
-      }
-    });
-  };
-
-  if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === "your_google_client_id_here") {
-    return (
-      <p className="text-xs text-center text-gray-400 dark:text-gray-500">
-        (Add VITE_GOOGLE_CLIENT_ID to Client/.env to enable Google Sign-In)
-      </p>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={!gisReady || signingIn}
-      className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600
-                 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm font-medium
-                 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150
-                 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
-    >
-      <GoogleIcon />
-      {signingIn ? "Signing in…" : "Continue with Google"}
-    </button>
-  );
-}
-
-// ── Main login page ───────────────────────────────────────────────────────────
 export default function Login() {
-  const { login, updateUser } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (searchParams.get("error") === "oauth_failed") {
-      setError("Google sign-in failed. Please try again or use email/password.");
-    }
-  }, [searchParams]);
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -123,102 +26,149 @@ export default function Login() {
     }
   };
 
-  const handleGoogleSuccess = (user) => {
-    updateUser(user);
-    navigate("/dashboard");
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4"
+      style={{ background: "linear-gradient(135deg,#020c0f 0%,#040d10 40%,#051218 100%)" }}
+    >
+      {/* ── Ambient glow orbs ─────────────────────────────────────────────── */}
+      <div className="absolute pointer-events-none"
+        style={{
+          top: "-15%", left: "-10%",
+          width: 600, height: 600,
+          borderRadius: "50%",
+          background: "radial-gradient(circle,rgba(10,110,138,.4) 0%,transparent 70%)",
+          filter: "blur(60px)",
+        }}
+      />
+      <div className="absolute pointer-events-none"
+        style={{
+          bottom: "-15%", right: "-10%",
+          width: 500, height: 500,
+          borderRadius: "50%",
+          background: "radial-gradient(circle,rgba(41,168,156,.28) 0%,transparent 70%)",
+          filter: "blur(60px)",
+        }}
+      />
+      <div className="absolute pointer-events-none"
+        style={{
+          top: "40%", left: "55%",
+          width: 400, height: 400,
+          borderRadius: "50%",
+          background: "radial-gradient(circle,rgba(12,205,214,.12) 0%,transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
+
+      {/* ── Card ──────────────────────────────────────────────────────────── */}
+      <div className="w-full max-w-md relative z-10">
 
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 rounded-2xl shadow-lg mb-4">
-            <span className="text-white text-2xl">🏥</span>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 relative"
+            style={{
+              background: "linear-gradient(135deg,#0a6e8a,#0a5f7a)",
+              boxShadow: "0 8px 32px rgba(10,110,138,.6), 0 0 0 1px rgba(255,255,255,.1)",
+            }}
+          >
+            <HeartPulse className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">HealthAI</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Your personal health assistant</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-white mb-1">HealthAI</h1>
+          <p style={{ color: "#7ab5c0" }} className="text-sm">Your intelligent health companion</p>
         </div>
 
-        <div className="card shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Sign in to your account</h2>
+        {/* Form card */}
+        <div className="rounded-2xl p-7"
+          style={{
+            background: "rgba(4,18,24,.78)",
+            border: "1px solid #164555",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 24px 64px rgba(0,0,0,.7), inset 0 1px 0 rgba(41,168,156,.15)",
+          }}
+        >
+          <h2 className="text-xl font-bold text-white mb-6">Welcome back</h2>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+            <div className="mb-5 p-3.5 rounded-xl text-sm flex items-start gap-2"
+              style={{ background: "rgba(244,63,94,.12)", border: "1px solid rgba(244,63,94,.3)", color: "#fb7185" }}
+            >
               {error}
             </div>
           )}
 
-          {/* Google Sign-In */}
-          <div className="mb-5">
-            <GoogleSignIn
-              onSuccess={handleGoogleSuccess}
-              onError={(msg) => setError(msg)}
-            />
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">or continue with email</span>
-            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-          </div>
-
-          {/* Email / password form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                className="input-field"
-                placeholder="you@example.com"
-                required
-                autoComplete="email"
-              />
+              <label className="block text-xs font-semibold mb-1.5 uppercase tracking-widest"
+                style={{ color: "#4a8a95" }}>Email</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                  style={{ color: "#4a8a95" }} />
+                <input
+                  type="email" name="email"
+                  value={form.email} onChange={handleChange}
+                  className="input-field pl-10"
+                  placeholder="you@example.com"
+                  required autoComplete="email"
+                  style={{ background: "#051218", borderColor: "#164555", color: "#e0f5f8" }}
+                />
+              </div>
             </div>
 
+            {/* Password */}
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                <Link to="/forgot-password" className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-widest"
+                  style={{ color: "#4a8a95" }}>Password</label>
+                <Link to="/forgot-password"
+                  className="text-xs font-medium hover:underline"
+                  style={{ color: "#29a89c" }}>
                   Forgot password?
                 </Link>
               </div>
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                className="input-field"
-                placeholder="••••••••"
-                required
-                autoComplete="current-password"
-              />
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                  style={{ color: "#4a8a95" }} />
+                <input
+                  type="password" name="password"
+                  value={form.password} onChange={handleChange}
+                  className="input-field pl-10"
+                  placeholder="••••••••"
+                  required autoComplete="current-password"
+                  style={{ background: "#051218", borderColor: "#164555", color: "#e0f5f8" }}
+                />
+              </div>
             </div>
 
             <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full py-2.5 mt-1"
+              type="submit" disabled={loading}
+              className="btn-primary w-full py-3 mt-2 text-sm"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Signing in…
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  Sign In <ArrowRight className="w-4 h-4" />
+                </span>
+              )}
             </button>
           </form>
 
-          <p className="mt-5 text-center text-sm text-gray-600 dark:text-gray-400">
-            Don&apos;t have an account?{" "}
-            <Link to="/register" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
-              Create one
-            </Link>
-          </p>
+          <div className="mt-6 text-center">
+            <p className="text-sm" style={{ color: "#4a8a95" }}>
+              Don&apos;t have an account?{" "}
+              <Link to="/register" className="font-semibold hover:underline"
+                style={{ color: "#29a89c" }}>
+                Create one
+              </Link>
+            </p>
+          </div>
         </div>
 
-        <p className="text-center text-xs text-gray-400 dark:text-gray-600 mt-6">
-          HealthAI provides AI-assisted health guidance. Always consult a qualified medical professional.
+        <p className="text-center text-xs mt-6" style={{ color: "#1e5a6a" }}>
+          AI guidance only — always consult a qualified medical professional.
         </p>
       </div>
     </div>

@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import api from "../api/client";
+import { Siren, AlertTriangle, Bot, User, Stethoscope } from "lucide-react";
 
 function EmergencyBanner({ data }) {
   return (
     <div className="emergency-pulse bg-red-600 text-white rounded-xl p-4 mb-4">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-2xl">🚨</span>
+        <Siren className="w-6 h-6 shrink-0" />
         <span className="font-bold text-lg">EMERGENCY DETECTED</span>
       </div>
       <p className="text-sm mb-2">{data.condition}</p>
@@ -26,7 +27,9 @@ function RedFlags({ flags }) {
   if (!flags?.length) return null;
   return (
     <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3 mb-3">
-      <p className="text-orange-700 dark:text-orange-400 font-semibold text-sm mb-1">⚠️ Red Flag Symptoms Detected</p>
+      <p className="text-orange-700 dark:text-orange-400 font-semibold text-sm mb-1 flex items-center gap-1.5">
+        <AlertTriangle className="w-4 h-4 shrink-0" /> Red Flag Symptoms Detected
+      </p>
       {flags.map((f) => (
         <p key={f.symptom} className="text-xs text-orange-600 dark:text-orange-400">• {f.warning}</p>
       ))}
@@ -39,8 +42,8 @@ function Message({ msg }) {
   return (
     <div className={`chat-bubble flex ${isUser ? "justify-end" : "justify-start"} mb-3`}>
       {!isUser && (
-        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm shrink-0 mr-2 mt-1">
-          🤖
+        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shrink-0 mr-2 mt-1">
+          <Bot className="w-4 h-4 text-white" />
         </div>
       )}
       <div className={`max-w-[80%] ${isUser ? "items-end" : "items-start"} flex flex-col`}>
@@ -70,15 +73,17 @@ function Message({ msg }) {
           </div>
         )}
         {msg.recommendations?.seekProfessionalHelp && (
-          <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">👨‍⚕️ Professional consultation recommended</p>
+          <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
+            <Stethoscope className="w-3 h-3 shrink-0" /> Professional consultation recommended
+          </p>
         )}
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
           {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </p>
       </div>
       {isUser && (
-        <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-sm shrink-0 ml-2 mt-1">
-          👤
+        <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center shrink-0 ml-2 mt-1">
+          <User className="w-4 h-4 text-gray-600 dark:text-gray-300" />
         </div>
       )}
     </div>
@@ -184,8 +189,8 @@ export default function Chat() {
         ))}
         {loading && (
           <div className="flex justify-start mb-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm shrink-0 mr-2">
-              🤖
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shrink-0 mr-2">
+              <Bot className="w-4 h-4 text-white" />
             </div>
             <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
               <div className="flex gap-1">

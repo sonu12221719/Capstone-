@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import api from "../api/client";
+import { MessageCircle, Pill, FileText, AlertTriangle, ClipboardList } from "lucide-react";
 
-const sourceIcon = { chat: "💬", prescription: "💊", report: "📄" };
+function SourceIcon({ source, className = "w-3.5 h-3.5" }) {
+  if (source === "chat") return <MessageCircle className={className} />;
+  if (source === "prescription") return <Pill className={className} />;
+  if (source === "report") return <FileText className={className} />;
+  return <ClipboardList className={className} />;
+}
+
 const sourceColor = {
   chat: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300",
   prescription: "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300",
@@ -32,7 +39,7 @@ function RiskCard({ risk }) {
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Risk Factors:</p>
           {risk.factors.map((f, i) => (
             <div key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <span className="text-orange-500 mt-0.5">⚠</span>
+              <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
               <span>{f.factor} — {f.recommendation}</span>
             </div>
           ))}
@@ -159,8 +166,8 @@ export default function HealthTimeline() {
             <div className="space-y-4">
               {filtered.map((record) => (
                 <div key={record._id} className="relative flex gap-4 pl-10">
-                  <div className="absolute left-2 w-5 h-5 rounded-full bg-white dark:bg-gray-800 border-2 border-blue-400 flex items-center justify-center text-xs">
-                    {sourceIcon[record.source] || "📋"}
+                  <div className="absolute left-2 w-5 h-5 rounded-full bg-white dark:bg-gray-800 border-2 border-blue-400 flex items-center justify-center">
+                    <SourceIcon source={record.source} />
                   </div>
                   <div className={`flex-1 border rounded-xl p-4 ${sourceColor[record.source] || "bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600"}`}>
                     <div className="flex items-start justify-between mb-2">
@@ -197,8 +204,8 @@ export default function HealthTimeline() {
                         <p className="text-xs font-medium opacity-70 mb-1">Medicines:</p>
                         <div className="space-y-1">
                           {record.medicines.map((m, i) => (
-                            <p key={i} className="text-xs">
-                              💊 {m.name}
+                            <p key={i} className="text-xs flex items-center gap-1">
+                              <Pill className="w-3 h-3 shrink-0" /> {m.name}
                               {m.dosage && ` — ${m.dosage}`}
                               {m.duration && ` (${m.duration})`}
                             </p>

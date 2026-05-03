@@ -30,7 +30,8 @@ const extractHealthData = (message, response) => {
     ],
     diagnoses: [
       /diagnosis[:\s]+([^.]+)/gi,
-      /(?:may be|possible|probable|indicative)[:\s]+([^.]+)/gi,
+      /(?:may be|possible|probable|indicative|suggest(?:s|ing)?|indicat(?:es|ing)|consistent with|likely|could be|might be)[:\s]+([^.]+)/gi,
+      /(?:you (?:may|might) have|appears? to be|points? to)[:\s]+([^.]+)/gi,
     ],
     medications: [
       /(?:medication|medicine|drug)[:\s]+([^.]+)/gi,
@@ -183,13 +184,15 @@ export const chatWithAI = async (req, res) => {
       });
     }
 
-    // 🏥 Health record
-    if (extracted.diagnoses.length) {
+    // 🏥 Health record — save whenever symptoms OR diagnoses were found
+    if (extracted.symptoms.length || extracted.diagnoses.length) {
       await HealthRecord.create({
         userId: req.user.id,
         source: "chat",
         symptoms: extracted.symptoms,
-        diagnosis: extracted.diagnoses.join(", "),
+        diagnosis: extracted.diagnoses.length
+          ? extracted.diagnoses.join(", ")
+          : "Health consultation",
       });
     }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import api from "../api/client";
+import { Bot, Pill, FileText, Clock, Calendar, Pin, XCircle, AlertTriangle, ClipboardList, Upload } from "lucide-react";
 
 // ── AI Analysis result panel ──────────────────────────────────────────────────
 function AnalysisPanel({ result }) {
@@ -13,7 +14,9 @@ function AnalysisPanel({ result }) {
     <div className="card border-green-200 dark:border-green-800 space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center text-xl shrink-0">🤖</div>
+        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center shrink-0">
+          <Bot className="w-5 h-5 text-green-600 dark:text-green-400" />
+        </div>
         <div>
           <h3 className="font-bold text-gray-900 dark:text-white">AI Analysis Complete</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">Powered by Gemini AI · Results saved to your Health Records</p>
@@ -81,14 +84,14 @@ function AnalysisPanel({ result }) {
             {a.medicines.map((m, i) => (
               <div key={i} className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <span>💊</span>
+                  <Pill className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
                   <p className="font-semibold text-gray-900 dark:text-white text-sm">{m.name}</p>
                   {m.dosage && <span className="badge-blue">{m.dosage}</span>}
                 </div>
                 <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-600 dark:text-gray-400 ml-6">
-                  {m.frequency && <span>🕐 {m.frequency}</span>}
-                  {m.duration && <span>📅 {m.duration}</span>}
-                  {m.instructions && <span>📌 {m.instructions}</span>}
+                  {m.frequency && <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {m.frequency}</span>}
+                  {m.duration && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {m.duration}</span>}
+                  {m.instructions && <span className="flex items-center gap-1"><Pin className="w-3 h-3" /> {m.instructions}</span>}
                 </div>
               </div>
             ))}
@@ -147,7 +150,9 @@ function AnalysisPanel({ result }) {
       {/* Warnings */}
       {a.warnings?.length > 0 && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl p-4">
-          <p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-2">⚠️ Warnings / Precautions</p>
+          <p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5" /> Warnings / Precautions
+          </p>
           <ul className="space-y-1">
             {a.warnings.map((w, i) => (
               <li key={i} className="text-sm text-red-700 dark:text-red-300 flex items-start gap-2">
@@ -176,8 +181,8 @@ function ReportCard({ report, onDelete }) {
   return (
     <div className="card">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center text-xl shrink-0">
-          📄
+        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center shrink-0">
+          <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
@@ -222,8 +227,9 @@ function ReportCard({ report, onDelete }) {
                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Medicines</p>
                   <div className="space-y-1">
                     {report.medicines.map((m, i) => (
-                      <div key={i} className="text-xs bg-purple-50 dark:bg-purple-900/20 rounded px-2 py-1 text-purple-700 dark:text-purple-300">
-                        💊 <strong>{m.name}</strong>
+                      <div key={i} className="text-xs bg-purple-50 dark:bg-purple-900/20 rounded px-2 py-1 text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                        <Pill className="w-3 h-3 shrink-0" />
+                        <strong>{m.name}</strong>
                         {m.dosage && ` — ${m.dosage}`}
                         {m.duration && ` (${m.duration})`}
                       </div>
@@ -274,7 +280,7 @@ export default function Reports() {
     setUploadResult(null);
 
     const fd = new FormData();
-    fd.append("file", file); // ← must match upload.single("file") on server
+    fd.append("file", file);
 
     try {
       const { data } = await api.post("/reports/upload", fd, {
@@ -337,7 +343,9 @@ export default function Reports() {
           </div>
         ) : (
           <div>
-            <div className="text-5xl mb-3">📤</div>
+            <div className="flex justify-center mb-3">
+              <Upload className="w-12 h-12 text-blue-400 dark:text-blue-500" />
+            </div>
             <p className="text-blue-700 dark:text-blue-300 font-semibold text-lg">Upload Prescription or Lab Report</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Click to browse or drag & drop</p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
@@ -357,13 +365,15 @@ export default function Reports() {
             <AnalysisPanel result={uploadResult.data.ocrResult} />
           ) : (
             <div className="card border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-              <p className="text-red-700 dark:text-red-400 text-sm">❌ {uploadResult.message}</p>
+              <p className="text-red-700 dark:text-red-400 text-sm flex items-center gap-2">
+                <XCircle className="w-4 h-4 shrink-0" /> {uploadResult.message}
+              </p>
             </div>
           )}
           {uploadResult.success && uploadResult.data.ocrResult?.error && (
             <div className="card border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 mt-2">
-              <p className="text-yellow-700 dark:text-yellow-300 text-sm">
-                ⚠️ Partial extraction: {uploadResult.data.ocrResult.error}
+              <p className="text-yellow-700 dark:text-yellow-300 text-sm flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" /> Partial extraction: {uploadResult.data.ocrResult.error}
               </p>
             </div>
           )}
@@ -381,7 +391,9 @@ export default function Reports() {
           </div>
         ) : reports.length === 0 ? (
           <div className="card text-center py-12">
-            <div className="text-4xl mb-3">📋</div>
+            <div className="flex justify-center mb-3">
+              <ClipboardList className="w-10 h-10 text-gray-300 dark:text-gray-600" />
+            </div>
             <p className="text-gray-400 dark:text-gray-500">No reports uploaded yet.</p>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
               Upload a prescription or lab report above and AI will analyze it instantly.

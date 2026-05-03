@@ -29,7 +29,7 @@ export const uploadReport = async (req, res) => {
 
     const healthRecord = await HealthRecord.create({
       userId: req.user.id,
-      source: "prescription",
+      source: "report",
       diagnosis: extractedData.diagnosis,
       symptoms: extractedData.symptoms || [],
       medicines: extractedData.medicines,
@@ -64,8 +64,10 @@ export const uploadReport = async (req, res) => {
 
 export const getReports = async (req, res) => {
   try {
-    const reports = await HealthRecord.find({ userId: req.user.id })
-      .sort({ createdAt: -1 });
+    const reports = await HealthRecord.find({
+      userId: req.user.id,
+      source: { $in: ["report", "prescription"] },
+    }).sort({ createdAt: -1 });
     res.json(reports);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch reports" });

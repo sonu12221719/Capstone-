@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import api from "../api/client";
+import { Pill, Store, MapPin, Mail, ClipboardList, Map, CheckCircle2, X, AlertTriangle, Search, Star } from "lucide-react";
 
 const MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || "";
 
@@ -93,8 +94,8 @@ function GoogleMap({ userLocation, pharmacies, selectedId, onSelect }) {
 
   if (!MAPS_KEY) {
     return (
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 text-center text-sm text-yellow-700 dark:text-yellow-400">
-        ⚠️ Add VITE_GOOGLE_MAPS_KEY to Client/.env to enable the map.
+      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 text-center text-sm text-yellow-700 dark:text-yellow-400 flex items-center justify-center gap-2">
+        <AlertTriangle className="w-4 h-4 shrink-0" /> Add VITE_GOOGLE_MAPS_KEY to Client/.env to enable the map.
       </div>
     );
   }
@@ -114,7 +115,9 @@ function OrderModal({ pharmacy, medicine, userLocation, onConfirm, onCancel, loa
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-t-2xl p-5 text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl">💊</div>
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+              <Pill className="w-5 h-5 text-white" />
+            </div>
             <div>
               <p className="font-bold text-lg">Confirm Order</p>
               <p className="text-blue-100 text-sm">An email will be sent to this pharmacy</p>
@@ -131,13 +134,14 @@ function OrderModal({ pharmacy, medicine, userLocation, onConfirm, onCancel, loa
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-2">
             <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Sending order to</p>
             <div className="flex items-start gap-3">
-              <span className="text-2xl">🏪</span>
+              <Store className="w-6 h-6 text-gray-500 dark:text-gray-400 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-gray-900 dark:text-white">{pharmacy.name}</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{pharmacy.address}</p>
                 {pharmacy.distance != null && (
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    📍 {pharmacy.distance < 1
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {pharmacy.distance < 1
                       ? `${Math.round(pharmacy.distance * 1000)} m`
                       : `${pharmacy.distance.toFixed(1)} km`} away
                   </p>
@@ -147,7 +151,7 @@ function OrderModal({ pharmacy, medicine, userLocation, onConfirm, onCancel, loa
           </div>
 
           <div className="flex items-start gap-2 text-sm text-gray-600 bg-green-50 dark:bg-green-900/20 rounded-xl p-3 border border-green-100 dark:border-green-800">
-            <span>📍</span>
+            <MapPin className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
             <div>
               <p className="font-medium text-gray-700 dark:text-gray-300 text-xs uppercase tracking-wide mb-0.5">Your location (shared with pharmacy)</p>
               <p className="text-gray-600 dark:text-gray-400 text-xs">{userLocation?.address || `${userLocation?.lat?.toFixed(5)}, ${userLocation?.lng?.toFixed(5)}`}</p>
@@ -164,7 +168,7 @@ function OrderModal({ pharmacy, medicine, userLocation, onConfirm, onCancel, loa
           <button onClick={onConfirm} disabled={loading} className="btn-primary flex-1 py-3 flex items-center justify-center gap-2">
             {loading ? (
               <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Sending...</>
-            ) : "📨 Place Order"}
+            ) : <><Mail className="w-4 h-4" /> Place Order</>}
           </button>
         </div>
       </div>
@@ -184,7 +188,9 @@ function SuccessToast({ order, onClose }) {
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm px-4 animate-[fadeInUp_0.3s_ease-out]">
       <div className="bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 rounded-2xl shadow-2xl p-4">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center text-xl shrink-0">✅</div>
+          <div className="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+          </div>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-gray-900 dark:text-white text-sm">Order Sent!</p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -192,12 +198,14 @@ function SuccessToast({ order, onClose }) {
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Order ID: {order.orderId}</p>
             {order.emailStatus?.error && (
-              <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                ⚠️ Email not delivered — check EMAIL_USER/EMAIL_PASS in .env
+              <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3" /> Email not delivered — check EMAIL_USER/EMAIL_PASS in .env
               </p>
             )}
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0">✕</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0">
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </div>
@@ -214,7 +222,9 @@ function PharmacyCard({ pharmacy, isSelected, onOrder, onSelect }) {
       }`}
     >
       <div className="flex items-start gap-3 mb-3">
-        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center text-xl shrink-0">💊</div>
+        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center shrink-0">
+          <Pill className="w-5 h-5 text-green-600 dark:text-green-400" />
+        </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">{pharmacy.name}</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{pharmacy.address}</p>
@@ -232,14 +242,20 @@ function PharmacyCard({ pharmacy, isSelected, onOrder, onSelect }) {
 
       <div className="flex items-center justify-between mb-3 text-xs">
         {pharmacy.rating ? (
-          <span className="text-yellow-500">
-            {"★".repeat(Math.floor(pharmacy.rating))}{"☆".repeat(5 - Math.floor(pharmacy.rating))}
+          <span className="flex items-center gap-0.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className={`w-3 h-3 ${i < Math.floor(pharmacy.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300 dark:text-gray-600"}`}
+              />
+            ))}
             <span className="text-gray-500 dark:text-gray-400 ml-1">{pharmacy.rating.toFixed(1)}</span>
           </span>
         ) : <span className="text-gray-400 dark:text-gray-500">No rating</span>}
         {pharmacy.distance != null && (
-          <span className="text-blue-600 dark:text-blue-400 font-medium">
-            📍 {pharmacy.distance < 1 ? `${Math.round(pharmacy.distance * 1000)} m` : `${pharmacy.distance.toFixed(1)} km`}
+          <span className="text-blue-600 dark:text-blue-400 font-medium flex items-center gap-1">
+            <MapPin className="w-3 h-3" />
+            {pharmacy.distance < 1 ? `${Math.round(pharmacy.distance * 1000)} m` : `${pharmacy.distance.toFixed(1)} km`}
           </span>
         )}
       </div>
@@ -250,15 +266,15 @@ function PharmacyCard({ pharmacy, isSelected, onOrder, onSelect }) {
           target="_blank"
           rel="noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="btn-secondary text-xs px-3 py-2"
+          className="btn-secondary text-xs px-3 py-2 flex items-center gap-1.5"
         >
-          🗺️ Directions
+          <Map className="w-3.5 h-3.5" /> Directions
         </a>
         <button
           className="btn-primary text-xs flex-1 py-2 flex items-center justify-center gap-1.5"
           onClick={(e) => { e.stopPropagation(); onOrder(pharmacy); }}
         >
-          📨 Order Medicine
+          <Mail className="w-3.5 h-3.5" /> Order Medicine
         </button>
       </div>
     </div>
@@ -272,7 +288,9 @@ function HistoryCard({ req, onDelete }) {
     <div className="card">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
-          <div className="w-9 h-9 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-lg shrink-0">💊</div>
+          <div className="w-9 h-9 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0">
+            <Pill className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          </div>
           <div className="min-w-0">
             <p className="font-semibold text-gray-900 dark:text-white text-sm">{req.medicineName}</p>
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">→ {req.pharmacy.name}</p>
@@ -308,16 +326,18 @@ function HistoryCard({ req, onDelete }) {
             </div>
           </div>
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">📧 Email sent to pharmacy:</p>
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
+              <Mail className="w-3 h-3" /> Email sent to pharmacy:
+            </p>
             <pre className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">{req.notificationMessage}</pre>
           </div>
           <a
             href={`https://www.google.com/maps/dir/?api=1&destination=${req.pharmacy.location?.lat},${req.pharmacy.location?.lng}`}
             target="_blank"
             rel="noreferrer"
-            className="btn-secondary text-xs inline-flex items-center gap-1"
+            className="btn-secondary text-xs inline-flex items-center gap-1.5"
           >
-            🗺️ Get Directions
+            <Map className="w-3.5 h-3.5" /> Get Directions
           </a>
         </div>
       )}
@@ -453,13 +473,13 @@ export default function Pharmacy() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-5 py-2 rounded-full text-sm font-medium border transition-colors ${
+            className={`px-5 py-2 rounded-full text-sm font-medium border transition-colors flex items-center gap-2 ${
               tab === t
                 ? "bg-blue-600 text-white border-blue-600"
                 : "text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500"
             }`}
           >
-            {t === "search" ? "🔍 Find Medicine" : `📋 My Orders (${history.length})`}
+            {t === "search" ? <><Search className="w-3.5 h-3.5" /> Find Medicine</> : <><ClipboardList className="w-3.5 h-3.5" /> My Orders ({history.length})</>}
           </button>
         ))}
       </div>
@@ -502,20 +522,20 @@ export default function Pharmacy() {
                 </div>
               ) : location ? (
                 <div className="flex items-center gap-2 text-xs text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-full border border-green-200 dark:border-green-800">
-                  <span>📍</span>
+                  <MapPin className="w-3.5 h-3.5" />
                   <span>Location detected — {location.lat.toFixed(4)}, {location.lng.toFixed(4)}</span>
                   <button onClick={getLocation} className="text-blue-600 dark:text-blue-400 hover:underline ml-1">Refresh</button>
                 </div>
               ) : (
                 <button onClick={getLocation} className="btn-secondary text-xs flex items-center gap-1.5">
-                  📍 Detect My Location
+                  <MapPin className="w-3.5 h-3.5" /> Detect My Location
                 </button>
               )}
             </div>
 
             {locationError && (
-              <p className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-2 border border-red-200 dark:border-red-800">
-                ⚠️ {locationError}
+              <p className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-2 border border-red-200 dark:border-red-800 flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> {locationError}
               </p>
             )}
             {searchError && (
@@ -573,7 +593,9 @@ export default function Pharmacy() {
         <div className="space-y-3">
           {history.length === 0 ? (
             <div className="card text-center py-12">
-              <div className="text-4xl mb-3">📋</div>
+              <div className="flex justify-center mb-3">
+                <ClipboardList className="w-10 h-10 text-gray-300 dark:text-gray-600" />
+              </div>
               <p className="text-gray-400 dark:text-gray-500">No orders placed yet.</p>
               <button className="btn-primary mt-4" onClick={() => setTab("search")}>
                 Find a pharmacy

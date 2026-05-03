@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
+import { Pencil, CheckCircle2 } from "lucide-react";
 
 const CHRONIC = ["Diabetes", "Hypertension", "Asthma", "Heart Disease", "Arthritis", "Thyroid", "COPD", "Kidney Disease"];
 const ALLERGIES = ["Penicillin", "Aspirin", "Sulfa drugs", "Pollen", "Dust", "Nuts", "Latex", "Ibuprofen"];
@@ -96,10 +97,10 @@ export default function Profile() {
             )}
           </div>
           <div
-            className="absolute bottom-0 right-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs cursor-pointer shadow"
+            className="absolute bottom-0 right-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white cursor-pointer shadow"
             onClick={() => fileRef.current?.click()}
           >
-            ✏
+            <Pencil className="w-3 h-3" />
           </div>
           <input
             ref={fileRef}
@@ -121,8 +122,8 @@ export default function Profile() {
         <h3 className="font-semibold text-gray-900 dark:text-white">Personal Information</h3>
 
         {success && (
-          <div className="p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-400 text-sm">
-            ✅ Profile updated successfully!
+          <div className="p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-400 text-sm flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0" /> Profile updated successfully!
           </div>
         )}
         {error && (
