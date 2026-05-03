@@ -19,7 +19,7 @@ import { sanitizeInput } from "./middleware/security.middleware.js";
 
 const app = express();
 
-const allowedOrigins = (https://capstone-2-t7r3.onrender.com")
+const allowedOrigins = (process.env.CLIENT_URLS || "https://capstone-2-t7r3.onrender.com")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
