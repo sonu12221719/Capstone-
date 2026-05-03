@@ -9,6 +9,7 @@ export default defineConfig({
       "/api": {
         target: "https://capstone-1-rhyp.onrender.com",
         changeOrigin: true,
+        secure: false,
       },
     },
   },
