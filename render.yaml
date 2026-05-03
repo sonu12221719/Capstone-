@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: capstone-frontend
+    env: static
+    buildCommand: cd Client && npm install && npm run build
+    staticPublishPath: ./Client/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
